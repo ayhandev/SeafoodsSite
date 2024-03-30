@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="chocolate_section layout_padding">
+    <div class="container">
+        <div class="heading_container">
+            <h2>
+                Our seafood 
+            </h2>
+            <p>
+                Seafood saturates the body with useful minerals and vitamins - iron, phosphorus, nickel, copper, cobalt, iodine, manganese, vitamins A, B, D
+            </p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="chocolate_container">
+            {% for product in products %}
+            <div class="box">
+                 <div class="img-box">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"> 
+                </div> 
+                <div class="detail-box">
+                    <h5>
+                        {{ product.name }}
+                    </h5>
+                    <h5>
+                     Region: {{ product.region }}
+                    </h5>
+                    <h5>
+                        {{ product.price }}$
+                    </h5>
+                    {% if product.user %}
+                    <a href="mailto:{{ product.user}}">Email:  {{ product.user}}</a>
+                    {% else %}
+                    <a href="{% url 'more:contact' %}">Not listed, you can contact us</p>
+                    {% endif %}
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% comment %} 
+          <div class="box">
+            <div class="img-box">
+              <img src="{% static 'images/png-transparent-christmas-island-red-crab-crab-cake-crab-crustacean-animals-seafood.png' %}" alt="">
+            </div>
+            <div class="detail-box">
+              <h6>
+                Yummy <span>Crab</span>
+              </h6>
+              <h5>
+                $5.0
+              </h5>
+              <a href="">
+                BUY NOW
+              </a>
+            </div>
+          </div>
+          <div class="box">
+            <div class="img-box">
+              <img src="{% static 'images/atlantic-salmo.png' %}" alt="">
+            </div>
+            <div class="detail-box">
+              <h6>
+                Yummy <span>Salmon</span>
+              </h6>
+              <h5>
+                $5.0
+              </h5>
+              <a href="">
+                BUY NOW
+              </a>
+            </div>
+          </div>
+          <div class="box">
+            <div class="img-box">
+              <img src="{% static 'images/gladiusanimals-seafood.png' %}" alt="">
+            </div>
+            <div class="detail-box">
+              <h6>
+                Yummy <span>Squid</span>
+              </h6>
+              <h5>
+                $5.0
+              </h5>
+              <a href="">
+                BUY NOW
+              </a>
+            </div>
+          </div>
+        </div>
+      </div> 
+    </section> {% endcomment %}
+
+    <!-- end chocolate section -->
+

@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% load account %}
+{% load socialaccount %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Page Title</title>
+<style>
+    /* Ваши CSS стили */
+
+    /* Общие стили для контейнера и его дочерних элементов */
+    .new-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start; /* Выравнивание по верхнему краю */
+        max-width: 1000px; /* Максимальная ширина контейнера */
+        margin: 0 auto; /* Центрирование контейнера по горизонтали */
+        padding: 20px; /* Отступы внутри контейнера */
+        background-color: #f8f9fa; /* Цвет фона контейнера */
+        border-radius: 10px; /* Закругление углов контейнера */
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Тень контейнера */
+    }
+
+    .new-left-side {
+        flex: 1; /* Одна из сторон занимает все доступное пространство */
+        padding-right: 20px; /* Отступ справа для разделения текста и формы */
+    }
+
+    .new-right-side {
+        flex: 1; /* Одна из сторон занимает все доступное пространство */
+    }
+
+    /* Стили для формы */
+    .new-form-container {
+        background-color: #ffffff; /* Цвет фона формы */
+        padding: 20px; /* Отступы внутри формы */
+        border-radius: 8px; /* Закругление углов формы */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень формы */
+    }
+
+    .new-form-group {
+        margin-bottom: 15px; /* Отступ между группами полей формы */
+    }
+
+    .new-label {
+        display: block; /* Блочное отображение метки */
+        margin-bottom: 5px; /* Отступ снизу метки */
+    }
+
+    .new-input,
+    .new-file-input,
+    .new-button {
+        width: 100%; /* Ширина полей ввода и кнопки - 100% контейнера */
+        padding: 10px; /* Внутренние отступы */
+        border: 1px solid #ccc; /* Граница с цветом #ccc */
+        border-radius: 5px; /* Закругление углов полей */
+    }
+
+    .new-button {
+        background-color: #007bff; /* Цвет фона кнопки */
+        color: white; /* Цвет текста на кнопке */
+        border: none; /* Убираем границу кнопки */
+        cursor: pointer; /* Изменяем курсор при наведении на кнопку */
+    }
+
+    .new-button:hover {
+        background-color: #0056b3; /* Изменяем цвет фона кнопки при наведении */
+    }
+
+    /* Стили для текста */
+    .new-description {
+        background-color: #ffffff; /* Цвет фона блока с текстом */
+        border-radius: 10px; /* Закругление углов блока */
+        padding: 20px; /* Внутренние отступы блока */
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Тень блока */
+        font-family: Arial, sans-serif; /* Шрифт текста */
+        margin-bottom: 20px; /* Отступ снизу блока */
+    }
+
+    .new-description h2 {
+        color: #007bff; /* Цвет заголовка */
+        font-size: 24px; /* Размер шрифта заголовка */
+        margin-bottom: 10px; /* Отступ снизу заголовка */
+    }
+
+    .new-description p {
+        color: #333; /* Цвет текста */
+        font-size: 16px; /* Размер шрифта текста */
+        line-height: 1.6; /* Межстрочный интервал */
+    }
+
+    .new-description p:last-child {
+        margin-bottom: 0; /* Убираем отступ снизу последнего абзаца */
+    }
+
+    /* Стили для таблицы с продуктами */
+    .product-table {
+        width: 100%; /* Ширина таблицы - 100% контейнера */
+        border-collapse: collapse; /* Сворачиваем границы таблицы */
+        margin-top: 20px; /* Отступ сверху таблицы */
+    }
+
+    .product-table th, .product-table td {
+        padding: 10px; /* Внутренние отступы ячеек */
+        border: 1px solid #ccc; /* Граница ячеек с цветом #ccc */
+        text-align: left; /* Выравнивание текста в ячейках по левому краю */
+    }
+
+    .product-table th {
+        background-color: #007bff; /* Цвет фона заголовков */
+        color: white; /* Цвет текста в заголовках */
+    }
+
+    .product-table td {
+        background-color: #f4f4f4; /* Цвет фона ячеек */
+    }
+
+    .product-actions {
+        display: flex; /* Отображение элементов внутри блока в виде строки */
+        justify-content: space-around; /* Выравнивание элементов по горизонтали с равным пространством между ними */
+        margin-top: 10px; /* Отступ сверху блока действий */
+    }
+
+    .product-actions a {
+        color: #007bff; /* Цвет текста ссылок */
+        text-decoration: none; /* Убираем подчеркивание у ссылок */
+    }
+
+    .product-actions a:hover {
+        text-decoration: underline; /* Добавляем подчеркивание при наведении на ссылку */
+    }
+
+    .summary-row {
+        font-weight: bold; /* Жирный шрифт для строки с итогами */
+        background-color: #e3f2fd; /* Цвет фона для строки с итогами */
+    }
+
+    .to {
+        color: #333333; /* Цвет текста */
+        margin-bottom: 20px; /* Отступ снизу */
+    }
+
+
+      /* Стили для кнопки переключения темы */
+#theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    position: relative;
+  }
+  
+  /* Стили для иконки текущей темы */
+  .theme-icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-image: url('path/to/theme-icons.png'); /* Путь к вашим иконкам тем */
+    background-position: 0 0; /* Позиция иконки светлой темы */
+    background-repeat: no-repeat;
+  }
+  
+  /* Стили для иконки темной темы */
+  body.dark-theme .theme-icon {
+    background-position: -20px 0; /* Позиция иконки темной темы */
+  }
+  
+  /* Темная тема */
+  body.dark-theme {
+    background-color: #333;
+    color: #fff;
+  }
+    
+</style>
+
+
+</head>
+<body>
+    <div class="new-container my-5 dark-theme">
+        <div class="new-left-side">
+            <div class="new-description">
+                <h2>You can add new products to your profile</h2>
+                <p>Hello, and welcome to your personal dashboard where you can add products. Please don't forget to specify your region as it's crucial for customers to understand where the food is coming from, which can influence their decision to order. Your region information is vital for ensuring a smooth ordering process.
+
+                    Additionally, please note that initially, orders will be directed to us, and then we'll proceed to send them to you. A commission fee of $1 will apply for each order.
+                    
+                    Thank you for your cooperation and understanding. If you have any questions or need assistance, feel free to reach out to us.
+                    
+                    Best regards.
+                </p>
+                <h6>[General Director Ayhan/Seafoods]</h6>
+            </div>
+            <!-- Таблица с продуктами -->
+            
+            {% if user.is_superuser %}
+            <div class="mt-5 dark-theme">
+                <h4 class="to">All products on the site and their information about them 🔽</h4>
+            </div>
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th class="table-header">Name</th>
+                        <th class="table-header">Price</th>
+                        <th class="table-header">Region</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>${{ product.price }}</td>
+                            <td>{{ product.region }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3" class="table-footer">Total Products: {{ products|length }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="table-footer">Total Price: ${{ total_price }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="table-footer">Regions: {{ regions|join:", " }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% elif user.is_authenticated and user.vipstatus.is_vip %}
+            <div class="mt-5 dark-theme">
+                <h4 class="to">You have successfully become a VIP user, you can now see all seafood on the site 🔽</h4>
+            </div>
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th class="table-header">Name</th>
+                        <th class="table-header">Price</th>
+                        <th class="table-header">Region</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>${{ product.price }}</td>
+                            <td>{{ product.region }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3" class="table-footer">Total Products: {{ products|length }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="table-footer">Total Price: ${{ total_price }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="table-footer">Regions: {{ regions|join:", " }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <div class="mt-5">
+                <h4 class="to">You can buy VIP status, with its help you can see all the products on our website and see information about them🔽</h4>
+            </div>
+            <button style="margin-top: 15px; background-color: aliceblue; border-radius: 10px; border: none; padding: 5px 7px; text-decoration: none; color: black;"><a href="{% url 'more:buy_vip' %}">Continue</a></button>
+        {% endif %}
+        
+
+
+            
+        
+        </div>
+        <div class="new-right-side">
+            <div class="new-form-container">
+                <form method="post" action="{% url 'more:product_form' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="new-form-group">
+                        <label for="name" class="new-label">Name:</label>
+                        <input type="text" id="name" name="name" class="new-input" placeholder="Enter name" required>
+                    </div>
+                    <div class="new-form-group">
+                        <label for="price" class="new-label">Price:</label>
+                        <input type="text" id="price" name="price" class="new-input" placeholder="Enter price" required>
+                    </div>
+                    <div class="new-form-group">
+                        <label for="region" class="new-label">Region:</label>
+                        <input type="text" id="region" name="region" class="new-input" placeholder="Enter region" required>
+                    </div>
+                    <div class="new-form-group">
+                        <label for="user" class="new-label">Your Email:</label>
+                        <input type="text" id="user" name="user" class="new-input" placeholder="Enter email" required>
+                    </div>
+                    <div class="new-form-group">
+                        <label for="image" class="new-label">Image:</label>
+                        <input type="file" id="image" name="image" class="new-file-input" accept="image" required>
+                    </div>
+                    <div class="new-form-group">
+                        <button type="submit" class="new-button">SEND NOW</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
+
+
+
+
+
+
+
+<audio id="buttonSound">
+    <source src="{% static 'audio/knop.mp3' %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+function playSound() {
+    var sound = document.getElementById("buttonSound");
+    sound.play();
+}
+</script>
+
+{% else %}
+
+<div style="margin: 30px;">
+    <h1>In advance! <br>
+        If you are not going to sell seafood, <br>
+         then don’t waste time and not register.</h1>
+         
+         <h3 style="margin-top: 30px;">To register or log in, click on the button 🔽</h3>
+         <button style="margin-top: 15px; background-color: aliceblue; border-radius: 10px; border: none; padding: 5px 7px; text-decoration: none; color: black;"><a href="{% provider_login_url "google" %}">Continue</a></button>
+</div>
+  {% endif %}
+{% endblock %}
