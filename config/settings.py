@@ -29,7 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+# система оплаты
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51P0rcvCJep2a4ZXzbwq2lkfoJxbY2JeX3frkUR6320fXj8znMUhv91CRoJpHMWZBDY4xAj3AqOIxwukqhxKcbEkc00BCiq6FuD'
+STRIPE_SECRET_KEY = 'sk_test_51P0rcvCJep2a4ZXzpA7IGmkm1khfEZSjWpTvExoNowZY7LHo2l4k0BmZhKLPLXkg0JQpW4qLXq8TtEznHPdwf3Ms00hftyTNuM'
 
 
 
@@ -55,7 +57,9 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.instagram',
     'crispy_forms', 
+    'corsheaders',
     'more',
 ]
 
@@ -88,7 +92,22 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    # Другие разрешенные домены
+]
+
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',  
+]
+
+
 
 WAGTAIL_SITE_NAME = "Seafoods"
 
@@ -158,7 +177,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Asia/Samarkand'
 

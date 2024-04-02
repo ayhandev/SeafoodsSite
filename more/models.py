@@ -20,6 +20,8 @@ class EmailRegister(models.Model):
     def __str__(self):
         return self.email
 
+class VisitCounter(models.Model):
+    count = models.PositiveIntegerField(default=0)
 
 
 class Product(models.Model):

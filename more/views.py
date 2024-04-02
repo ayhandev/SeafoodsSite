@@ -1,4 +1,12 @@
 import smtpd
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
+from django.conf import settings
+from .forms import FormsRegisterForm
+import ssl
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
@@ -10,10 +18,17 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
 from django.core.mail import send_mail
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import stripe
+from .models import VIPStatus  
 from django.conf import settings
 from django.db.models import Sum, Count
 from .models import VIPStatus
 import ssl
+
 
 def home(request):
     reviews = Review.objects.all() 
@@ -86,14 +101,7 @@ def testimonial(request):
 
 
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
-from django.conf import settings
-from .forms import FormsRegisterForm
-import ssl
+
 
 def submit_form(request):
     if request.method == 'POST':
@@ -200,57 +208,91 @@ def view_product(request, product_id):
 
 
 
-# from django.contrib.auth.decorators import login_required
-# from django.shortcuts import render, redirect
-# from django.core.mail import send_mail
-# from .models import VIPStatus
 
-# from django.contrib.auth.decorators import login_required
-# from django.shortcuts import render, redirect
-# from django.core.mail import send_mail
-# from .models import VIPStatus
-
-# @login_required
-# def buy_vip(request):
-#     if request.method == 'POST':
-#         user = request.user
-#         vip_status, created = VIPStatus.objects.get_or_create(user=user)
-#         vip_status.is_vip = True
-#         vip_status.save()
-
-#         subject = 'Уведомление о покупке VIP-статуса'
-#         message = f'{user.username} ({user.email}) купил VIP-статус.'
-#         recipient_list = ['jumanyyazowayhan32@gmail.com']  # Замените на ваш адрес электронной почты
-
-#         send_mail(subject, message, 'jumanyyazowayhan32@gmail.com', recipient_list, fail_silently=False)
-
-#         return redirect('/')
-    
-#     return render(request, 'buy_vip.html')
-
-
-
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from .models import VIPStatus  # Подставьте правильный импорт вашей модели VIPStatus
-
-@login_required  # Декоратор, требующий аутентификации пользователя
+@login_required  
 def buy_vip(request):
-    if request.method == 'POST':
-        # Получаем текущего пользователя
-        user = request.user
-
-        # Получаем или создаем объект VIPStatus для текущего пользователя
-        vip_status, created = VIPStatus.objects.get_or_create(user=user)
-
-        # Обновляем статус на VIP
-        vip_status.is_vip = True
-        vip_status.save()
-
-        return redirect('/')
+    user = request.user
+    vip_status, created = VIPStatus.objects.get_or_create(user=user)
+    vip_status.is_vip = True
+    vip_status.save()
+    
 
     return render(request, 'buy_vip.html')
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.urls import reverse
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+import stripe
+from .models import VIPStatus
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+@csrf_exempt
+def process_payment(request):
+    if request.method == 'POST':
+        token = request.POST.get('stripeToken')
+        amount = 1000 
+
+        if not token:
+            return JsonResponse({'error': 'Invalid token'})
+
+        try:
+            # Создание чека
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': 'VIP статус',
+                            },
+                            'unit_amount': amount * 100,  # Сумма в центах
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                success_url=request.build_absolute_uri(reverse('success_view')) + '?session_id={CHECKOUT_SESSION_ID}',  # URL для успешной оплаты
+                cancel_url=request.build_absolute_uri(reverse('profile')),  # URL для отмены оплаты
+            )
+
+            return JsonResponse({'sessionId': checkout_session['id']})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'})
+
+
+from django.shortcuts import render, redirect, reverse
+from django.http import JsonResponse
+from django.http import HttpResponseForbidden
+from .models import VisitCounter
+
+@login_required
+def success_view(request):
+    # Получаем текущего пользователя
+    user = request.user
+
+    # Проверяем параметр 'success' из GET-запроса для определения успешности платежа
+    success = request.GET.get('success')
+        # Обновляем запись VIPStatus для пользователя, если платеж успешен
+    vip_status, created = VIPStatus.objects.get_or_create(user=user)
+    vip_status.is_vip = True
+    vip_status.save()
+
+        # Увеличиваем счетчик посещений только при успешной оплате
+    visit_counter, created = VisitCounter.objects.get_or_create(id=1)
+    visit_counter.count += 1
+    visit_counter.save()
+
+    return render(request, 'success.html', {
+        'visit_count': visit_counter.count,
+        'is_vip': vip_status.is_vip,
+    })
 
 
 

@@ -18,6 +18,8 @@ urlpatterns = [
     path('product/<int:product_id>/', views.view_product, name='view_product'),
     path('log/', views.log, name='log'),
     path('buy_vip/', views.buy_vip, name='buy_vip'),
+    path('process_payment/', views.process_payment, name='process_payment'),
+    path('success/', views.success_view, name='success_view'),
     path('profile', views.profile_view, name="profile")
 
    ]
