@@ -211,12 +211,6 @@ def view_product(request, product_id):
 
 @login_required  
 def buy_vip(request):
-    user = request.user
-    vip_status, created = VIPStatus.objects.get_or_create(user=user)
-    vip_status.is_vip = True
-    vip_status.save()
-    
-
     return render(request, 'buy_vip.html')
 
 from django.shortcuts import render, redirect
