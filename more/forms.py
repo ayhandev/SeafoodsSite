@@ -24,6 +24,6 @@ class EmailRegisterForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['name', 'description', 'image']
+        fields = ['name', 'description']
 
 #  сделал Айхан

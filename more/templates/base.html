@@ -236,24 +236,15 @@ body.dark-theme {
         <div class="col-md-6 col-lg-3">
           <div class="info_insta">
             <h4>
-              Instagram
+              About us
             </h4>
             <div class="insta_box">
-              <div class="img-box">
-                <img src="{% static 'images/insta-img.png' %}" alt="">
-              </div>
-              <p>
-                long established fact that a reader
-              </p>
+              {% comment %} <div class="img-box">
+                <img src="{% static 'images/policy.jpg' %}" alt="">
+              </div> {% endcomment %}
+              <a style="color: white;" href="{% url 'more:politica' %}">Privacy Policy</a>
             </div>
-            <div class="insta_box">
-              <div class="img-box">
-                <img src="{% static 'images/insta-img.png' %}" alt="">
-              </div>
-              <p>
-                long established fact that a reader
-              </p>
-            </div>
+            
           </div>
         </div>
         <div class="col-md-6 col-lg-3">

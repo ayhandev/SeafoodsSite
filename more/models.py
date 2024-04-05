@@ -40,7 +40,6 @@ class Product(models.Model):
 class Review(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
-    image = models.ImageField(upload_to="media/",default="cel.png", blank=True)
     
 
     def __str__(self):
