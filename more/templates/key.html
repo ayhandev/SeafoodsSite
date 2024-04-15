@@ -232,6 +232,11 @@
                     </tr>
                 </tbody>
             </table>
+
+            {% comment %} <div class="mt-4">
+                Free ChatGPT4 Classic
+                <button style="margin-top: 15px; background-color: aliceblue; border-radius: 10px; border: none; padding: 5px 7px; text-decoration: none; color: black;"><a href="{% url 'more:chat' %}">ChatGPT</a></button>
+            </div> {% endcomment %}
         {% elif user.is_authenticated and user.vipstatus.is_vip %}
             <div class="mt-5 dark-theme">
                 <h4 class="to">You have successfully become a VIP user, you can now see all seafood on the site 🔽</h4>
@@ -263,6 +268,11 @@
                     </tr>
                 </tbody>
             </table>
+
+            {% comment %} <div class="mt-4">
+                Free ChatGPT4 Classic
+                <button style="margin-top: 15px; background-color: aliceblue; border-radius: 10px; border: none; padding: 5px 7px; text-decoration: none; color: black;"><a href="{% url 'more:chat' %}">ChatGPT</a></button>
+            </div> {% endcomment %}
         {% else %}
             <div class="mt-5">
                 <h4 class="to">You can buy VIP status, with its help you can see all the products on our website and see information about them🔽</h4>

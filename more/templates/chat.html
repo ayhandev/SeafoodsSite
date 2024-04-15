@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat with GPT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #121212;
+    }
+    
+    .chat-container {
+        width: 40%;
+        background-color: #242424;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+    
+    .chat-header {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .chat-messages {
+        border: 1px solid #444;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+        background-color: #181818;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+    
+    .message {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+    
+    .user-message {
+        background-color: #005c97;
+        text-align: right;
+    }
+    
+    .assistant-message {
+        background-color: #306060;
+    }
+    
+    .typing-indicator {
+        display: none; /* Initially hidden */
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .dot {
+        height: 8px;
+        width: 8px;
+        margin: 0 4px;
+        background-color: #bbb;
+        border-radius: 50%;
+        animation: typing 1.4s infinite both;
+    }
+    
+    .dot:nth-child(1) { animation-delay: 0s; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typing {
+        0% { transform: translateY(0); }
+        20% { transform: translateY(-10px); }
+        40%, 100% { transform: translateY(0); }
+    }
+    
+    input, button {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: none;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    
+    input { background-color: #333; color: #ddd; }
+    button { background-color: #0d6efd; color: #fff; }
+    
+    input::placeholder { color: #bbb; }
+    button:hover { background-color: #0a58ca; }
+    
+</style>
+<body>
+    {% if user.is_authenticated  and  user.vipstatus.is_vip %}
+    <div class="chat-container">
+        <div class="chat-header">ChatGPT4 Classic</div>
+        <div class="chat-messages">
+            <!-- Предполагаемая структура сообщений -->
+            {% if assistant_response %}
+                <div class="message user-message">Ваш вопрос: {{ user_input }}</div>
+                <div class="message assistant-message">ChatGPT: {{ assistant_response }}</div>
+            {% endif %}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <label style="color: white;" for="user_input">Ваш вопрос:</label>
+            <input type="text" id="user_input" name="user_input" required>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+    {% elif user.is_superuser %}
+    <div class="chat-container">
+        <div class="chat-header">ChatGPT4 Classic</div>
+        <div class="chat-messages">
+            <!-- Предполагаемая структура сообщений -->
+            {% if assistant_response %}
+                <div class="message user-message">Ваш вопрос: {{ user_input }}</div>
+                <div class="message assistant-message">ChatGPT: {{ assistant_response }}</div>
+            {% endif %}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <label style="color: white;" for="user_input">Ваш вопрос:</label>
+            <input type="text" id="user_input" name="user_input" required>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+    {% else %}
+    <div>
+        <div class="mt-5">
+            <h4 class="to" style="color: white;">You can buy VIP status, with its help you can see all the products on our website and see information about them🔽</h4>
+        </div>
+        <button style="margin-top: 15px; background-color: aliceblue; border-radius: 10px; border: none; padding: 5px 7px; text-decoration: none; color: black;"><a href="{% url 'more:buy_vip' %}" style="color: black;">Continue</a></button>
+   
+    </div>
+    {% endif %}
+<script>
+    document.getElementById('chat-form').onsubmit = function(e) {
+        e.preventDefault();
+    
+        const inputField = document.getElementById('user_input');
+        const userText = inputField.value;
+        const chatMessages = document.querySelector('.chat-messages');
+        const typingIndicator = document.querySelector('.typing-indicator');
+    
+        displayMessage(userText, 'user-message');
+    
+        const formData = new FormData();
+        formData.append('user_input', userText);
+    
+        typingIndicator.style.display = 'flex';
+    
+        fetch('/chatgpt/', { // Replace '/path/to/handler/' with your URL
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            typingIndicator.style.display = 'none';
+            displayMessageCharacterByCharacter(data.assistant_response, 'assistant-message', chatMessages);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            typingIndicator.style.display = 'none';
+        });
+    
+        inputField.value = '';
+    };
+    
+    function displayMessageCharacterByCharacter(text, className, container) {
+        const messageWrapper = document.createElement('div');
+        messageWrapper.className = 'message ' + className;
+        container.appendChild(messageWrapper);
+    
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                messageWrapper.textContent += text[i++];
+            } else {
+                clearInterval(interval);
+            }
+        }, 50); // Adjust typing speed here
+    }
+    
+    function displayMessage(text, className) {
+        const messageWrapper = document.createElement('div');
+        messageWrapper.className = 'message ' + className;
+        messageWrapper.textContent = text;
+        document.querySelector('.chat-messages').appendChild(messageWrapper);
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }

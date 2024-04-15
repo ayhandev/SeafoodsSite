@@ -1,33 +1,27 @@
-import smtpd
+import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from .forms import FormsRegisterForm
-import ssl
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.core.mail import EmailMessage
-from django.urls import reverse
 from django.shortcuts import get_object_or_404, render, redirect,HttpResponseRedirect
 from .forms import FormsRegisterForm, ProductForm, EmailRegisterForm, ReviewForm
 from .models import Product, Review
-from django.contrib.auth.decorators import login_required 
-from django.core.mail import send_mail
-from django.conf import settings
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import stripe
 from .models import VIPStatus  
-from django.conf import settings
-from django.db.models import Sum, Count
 from .models import VIPStatus
 import ssl
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
+
 
 
 def home(request):
@@ -35,28 +29,25 @@ def home(request):
     return render(request, 'home.html', {'reviews': reviews})
 
 
+
+
 def about(request):
     return render(request, 'about.html')
 
 
 def login(request):
-    # Получаем список продуктов
     products = Product.objects.all()
 
-    # Вычисляем общую стоимость всех продуктов
     total_price = sum(product.price for product in products)
 
-    # Получаем уникальные регионы продуктов
     regions = set(product.region for product in products)
 
-    # Подготавливаем контекст для передачи в шаблон
     context = {
         'products': products,
         'total_price': total_price,
         'regions': regions,
     }
 
-    # Рендерим шаблон 'key.html' с переданным контекстом
     return render(request, 'key.html', context)
 
 
@@ -113,28 +104,22 @@ def submit_form(request):
             phone = form.cleaned_data['phone']
             email = form.cleaned_data['email']
             message = form.cleaned_data['message']
-
-            # Создаем контекст SSL и отключаем проверку сертификата
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
 
-            # Устанавливаем соединение с SMTP сервером
             with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT) as smtp_server:
                 smtp_server.starttls(context=ssl_context)
                 smtp_server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
 
-                # Создаем объект сообщения
                 msg = MIMEMultipart()
                 msg['From'] = settings.EMAIL_HOST_USER
                 msg['To'] = 'jumanyyazowayhan32@gmail.com'
                 msg['Subject'] = 'Contact Form Submission'
 
-                # Добавляем текст сообщения в тело письма
                 body = f'Full Name: {full_name}\nPhone: {phone}\nEmail: {email}\nMessage: {message}'
                 msg.attach(MIMEText(body, 'plain'))
 
-                # Отправляем письмо
                 smtp_server.send_message(msg)
 
             return HttpResponseRedirect('/')
@@ -153,6 +138,7 @@ def product_form(request):
         if form.is_valid():
             form.save()
             return render(request, 'home.html')
+        messages.success(request, 'Продукт успешно добавлен!')
     else:
         form = ProductForm()
     play_sound = True 
@@ -180,6 +166,7 @@ def review_form(request):
             else:
                 Review.objects.create(name=form.cleaned_data['name'], description=form.cleaned_data['description'])
             return redirect('more:home')  
+        messages.success(request, 'Отзыв успешно опубликован!')
     else:
         form = ReviewForm()
     play_sound = True 
@@ -200,13 +187,9 @@ def log(request):
 # сделал Айхан
 
 
-
 def view_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'product_detail.html', {'product': product})
-
-
-
 
 
 @login_required  
@@ -228,12 +211,9 @@ def process_payment(request):
     if request.method == 'POST':
         token = request.POST.get('stripeToken')
         amount = 1000 
-
         if not token:
             return JsonResponse({'error': 'Invalid token'})
-
         try:
-            # Создание чека
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[
@@ -243,18 +223,18 @@ def process_payment(request):
                             'product_data': {
                                 'name': 'VIP статус',
                             },
-                            'unit_amount': amount * 100,  # Сумма в центах
+                            'unit_amount': amount * 100,  
                         },
                         'quantity': 1,
                     },
                 ],
                 mode='payment',
                 success_url=request.build_absolute_uri(reverse('success_view')) + '?session_id={CHECKOUT_SESSION_ID}',  # URL для успешной оплаты
-                cancel_url=request.build_absolute_uri(reverse('profile')),  # URL для отмены оплаты
+                cancel_url=request.build_absolute_uri(reverse('profile')),  
             )
-
+            messages.success(request, 'Оплата успешно прошла!')
             return JsonResponse({'sessionId': checkout_session['id']})
-
+        
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
@@ -263,22 +243,18 @@ def process_payment(request):
 
 from django.shortcuts import render, redirect, reverse
 from django.http import JsonResponse
-from django.http import HttpResponseForbidden
+from django.http import HttpRequest
 from .models import VisitCounter
 
 @login_required
 def success_view(request):
-    # Получаем текущего пользователя
     user = request.user
 
-    # Проверяем параметр 'success' из GET-запроса для определения успешности платежа
     success = request.GET.get('success')
-        # Обновляем запись VIPStatus для пользователя, если платеж успешен
     vip_status, created = VIPStatus.objects.get_or_create(user=user)
     vip_status.is_vip = True
     vip_status.save()
 
-        # Увеличиваем счетчик посещений только при успешной оплате
     visit_counter, created = VisitCounter.objects.get_or_create(id=1)
     visit_counter.count += 1
     visit_counter.save()
@@ -288,8 +264,90 @@ def success_view(request):
         'is_vip': vip_status.is_vip,
     })
 
+# from django.shortcuts import render
+# from django.http import HttpResponse
+# import g4f
+# import json
+# from functools import lru_cache
+
+# # Функция для сериализации сообщений
+# def serialize_messages(messages):
+#     return json.dumps(messages, sort_keys=True)
+
+# # Функция кеширования ответов AI
+# @lru_cache(maxsize=100)
+# def ask_gpt_cached(messages_json: str) -> str:
+#     messages = json.loads(messages_json)
+#     try:
+#         response = g4f.ChatCompletion.create(
+#             model=g4f.models.gpt_4,
+#             messages=messages
+#         )
+#         return str(response)
+#     except Exception as e:
+#         return str(e)
+
+# # Основная функция обработки запросов для Django
+# def chat(request):
+#     context = {"user_input": "", "assistant_response": ""}
+#     if request.method == "POST":
+#         user_input = request.POST.get("user_input", "")
+#         messages = json.loads(request.session.get("messages", "[]"))  # Загрузка истории из сессии
+#         messages.append({"role": "user", "content": user_input})
+        
+#         messages_json = serialize_messages(messages)
+#         assistant_response = ask_gpt_cached(messages_json)
+
+#         # Обновляем историю в сессии
+#         if len(messages) >= 10:
+#             messages = messages[-9:]  # Оставляем последние 9 сообщений + новый ответ
+#         messages.append({"role": "assistant", "content": assistant_response})
+#         request.session["messages"] = json.dumps(messages)  # Сохраняем в сессии
+
+#         context = {
+#             "user_input": user_input,
+#             "assistant_response": assistant_response
+#         }
+#     return render(request, "chat.html", context)
+
+
+
+
+from django.http import HttpResponse
+
+
+def set_cookie(request):
+    response = HttpResponse("Cookie set")
+    response.set_cookie('user_cookie', 'cookie_value', max_age=3600)  # Срок действия 1 час
+    return response
+
+def delete_cookie(request):
+    response = HttpResponse("Cookie deleted")
+    response.delete_cookie('user_cookie')
+    return response
+
+
+def show_cookie(request):
+    if 'my_cookie' in request.COOKIES:
+        return HttpResponse(f"Value of my_cookie is: {request.COOKIES['my_cookie']}")
+    else:
+        return HttpResponse("No cookie found.")
+
+def cookie_policy(request):
+    return render(request, 'cookie_policy.html')
+
+def cok(request):
+    return render(request, 'cok.html')
+
+
 
 
 @login_required
 def profile_view(request):
     return render(request, "profile.html")
+
+@login_required
+def profile1(request):
+    return render(request, "profile.html")
+
+

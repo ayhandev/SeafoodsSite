@@ -33,7 +33,73 @@
     background-color: #333;
     color: #fff;
   }
-  
+    /* Стили для красивых оповещений */
+    .notification {
+        padding: 15px;
+        background-color: #4CAF50;
+        color: white;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    /* Стили для иконки галочки */
+    .fa-check-circle {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+    }
+    #cookieConsentContainer {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: none;
+      width: 300px;
+  }
+  #cookieConsentContainer p {
+      font-size: 16px;
+      color: #333;
+      margin: 0 0 10px 0;
+  }
+  #cookieConsentContainer {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000; 
+}
+
+  #cookieConsentContainer button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      margin-right: 8px;
+  }
+  #cookieConsentContainer button.accept {
+      background-color: #4CAF50;
+      color: white;
+  }
+  #cookieConsentContainer button.decline {
+      background-color: #f44336;
+      color: white;
+  }
+  #cookieInfoModal {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    z-index: 1050;
+    border: 1px solid #ccc;
+}
+
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -104,18 +170,17 @@
 
 <body>
 <!--Start of Tawk.to Script-->
-<script type="text/javascript">
-  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-  (function(){
-  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/660c35081ec1082f04ddfe03/1hqfquaml';
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0);
-  })();
-  </script>
+
   <!--End of Tawk.to Script-->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  {% comment %} {% if messages %}
+  <ul class="messages">
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+  </ul>
+  {% endif %} {% endcomment %}
   <div class="main_body_content">
 
     <div class="hero_area">
@@ -178,7 +243,69 @@
       </header>
 
 
+      <div id="cookieConsentContainer">
+        <h5 style="color: blue; text-align: center;">Cookies</h5>
+        <p style="text-align: center;">This site uses cookies. Do you accept?</p>
+        <div>
+          <button style="background-color: blue; color: white;" onclick="setCookie()">Accept</button>
+        <button style="margin-left: 50px; " onclick="deleteCookie()">Decline</button>
+        <button style="margin-top: 5px; margin-left: 60px;" onclick="openCookieInfo(); return false;">Learn more</button>
+        </div>
+    </div>
+    <div id="cookieInfoModal" style="display:none;">
+      <h4>Cookie Policy</h4>
+      <p>Here you can find more information about how our website uses cookies <span><a href="{% url 'more:cookie' %}">right here</a></span></p>
+      <button onclick="closeCookieInfo()">Close</button>
+  </div>
+  <script>
+    function setCookie() {
+        var d = new Date();
+        d.setTime(d.getTime() + (60 * 60 * 1000)); // Срок действия cookie 1 час
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = "userConsent=true;" + expires + ";path=/";
+        document.getElementById("cookieConsentContainer").style.display = "none";
+    }
 
+    function deleteCookie() {
+        document.cookie = "userConsent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+        document.getElementById("cookieConsentContainer").style.display = "none";
+    }
+
+    function checkCookie() {
+        var user = getCookie("userConsent");
+        if (user != "") {
+            document.getElementById("cookieConsentContainer").style.display = "none";
+        } else {
+            document.getElementById("cookieConsentContainer").style.display = "block";
+        }
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function openCookieInfo() {
+        document.getElementById('cookieInfoModal').style.display = 'block';
+    }
+
+    function closeCookieInfo() {
+        document.getElementById('cookieInfoModal').style.display = 'none';
+    }
+
+    window.onload = checkCookie;
+</script>
 
 
       <!-- end header section -->
@@ -436,20 +563,7 @@
 
             </div>
           </div>
-          <div class="col-md-4 col-lg-3">
-
-            <div class="social_box">
-              <a href="https://facebook.com">
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-              </a>
-              <a href="https://twitter.com">
-                <i class="fa fa-twitter" aria-hidden="true"></i>
-              </a>
-              <a href="https://www.linkedin.com/in/ayhan-jumanyyazov-786416299/">
-                <i class="fa fa-linkedin" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
+          
         </div>
         <div class="row info_main_row">
           <div class="col-md-6 col-lg-3">
@@ -544,8 +658,7 @@
     <div class="container">
       <div class="col-md-11 col-lg-8 mx-auto">
         <p>
-          &copy; <span id="displayYear"></span> All Rights Reserved By
-          <a href="https://html.design/">Ayhan</a>
+          <strong>© 2024 <a href="https://github.com/ayhandev/">ayhandev</a></strong>
         </p>
       </div>
     </div>

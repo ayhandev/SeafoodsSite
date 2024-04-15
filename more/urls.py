@@ -20,6 +20,13 @@ urlpatterns = [
     path('buy_vip/', views.buy_vip, name='buy_vip'),
     path('process_payment/', views.process_payment, name='process_payment'),
     path('success/', views.success_view, name='success_view'),
+    path('accounts/login/None', views.profile1, name="profile1"),
+    path('set_cookie/', views.set_cookie, name='set_cookie'),
+    path('show_cookie/', views.show_cookie, name='show_cookie'),
+    path('delete_cookie/', views.delete_cookie, name='delete_cookie'),
+    path('set_cookie/', views.set_cookie, name='set_cookie'),
+    path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
+    path('cookies/', views.cok, name="cookie"),
     path('profile', views.profile_view, name="profile")
 
    ]

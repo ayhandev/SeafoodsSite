@@ -29,6 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+
 # система оплаты
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51P0rcvCJep2a4ZXzbwq2lkfoJxbY2JeX3frkUR6320fXj8znMUhv91CRoJpHMWZBDY4xAj3AqOIxwukqhxKcbEkc00BCiq6FuD'
 STRIPE_SECRET_KEY = 'sk_test_51P0rcvCJep2a4ZXzpA7IGmkm1khfEZSjWpTvExoNowZY7LHo2l4k0BmZhKLPLXkg0JQpW4qLXq8TtEznHPdwf3Ms00hftyTNuM'
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
     'crispy_forms', 
     'corsheaders',
     'more',
+    
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -75,7 +77,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'OAUTH_PKCE_ENABLED': True,
         'APP': {
             'client_id': '1064541990306-j71jgl07uk19je864a8kq0nliuodcqau.apps.googleusercontent.com',
-            'secret': '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',
+            'secret': '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',
             'key': ''
         }
     }
@@ -93,6 +95,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'more.middleware.ErrorHandlerMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -177,7 +180,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'tk'
 
 TIME_ZONE = 'Asia/Samarkand'
 

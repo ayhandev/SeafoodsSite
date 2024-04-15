@@ -22,11 +22,12 @@ from django.urls import path, include
 from allauth.socialaccount.providers.google import views as google_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('control_menu/', admin.site.urls),
     path('users/', include('django.contrib.auth.urls')),
     path('accounts/', include('allauth.urls')),
     path('accounts/google/login/', google_views.oauth2_login, name='google_login'),
     path('accounts/google/login/callback/', google_views.oauth2_callback, name='google_callback'),
+    path('cookie/', include('more.urls')),
     path('', include(('more.urls', 'config'), namespace='more'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
