@@ -52,3 +52,9 @@ class VIPStatus(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+class DinoSettings(models.Model):
+    color = models.CharField(max_length=7, default='#FF5733')  
+
+    def __str__(self):
+        return f"Dino color: {self.color}"

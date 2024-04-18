@@ -339,8 +339,21 @@ def cookie_policy(request):
 def cok(request):
     return render(request, 'cok.html')
 
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import DinoSettings
 
+def pashalka(request):
+    return render(request, 'pashalka.html')
 
+@csrf_exempt
+def change_dino_color(request):
+    if request.method == 'POST':
+        color = request.POST.get('color')
+        DinoSettings.objects.update_or_create(id=1, defaults={'color': color})
+        return JsonResponse({'status': 'success', 'color': color})
+    return JsonResponse({'status': 'error'})
 
 @login_required
 def profile_view(request):

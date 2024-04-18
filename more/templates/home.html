@@ -245,11 +245,11 @@
 
       <div id="cookieConsentContainer">
         <h5 style="color: blue; text-align: center;">Cookies</h5>
-        <p style="text-align: center;">This site uses cookies. Do you accept?</p>
+        <p style="text-align: center;">This site uses cookies. Do you accept? <span><a href="#" onclick="openCookieInfo();" >Learn more</a></span></p>
         <div>
           <button style="background-color: blue; color: white;" onclick="setCookie()">Accept</button>
-        <button style="margin-left: 50px; " onclick="deleteCookie()">Decline</button>
-        <button style="margin-top: 5px; margin-left: 60px;" onclick="openCookieInfo(); return false;">Learn more</button>
+        <button  onclick="deleteCookie()">Decline</button>
+        {% comment %} <button style="margin-top: 5px; margin-left: 60px;" onclick="openCookieInfo(); return false;">Learn more</button> {% endcomment %}
         </div>
     </div>
     <div id="cookieInfoModal" style="display:none;">

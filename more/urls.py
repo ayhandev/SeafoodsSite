@@ -27,6 +27,8 @@ urlpatterns = [
     path('set_cookie/', views.set_cookie, name='set_cookie'),
     path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
     path('cookies/', views.cok, name="cookie"),
+    path('change_dino_color/', views.change_dino_color, name='change_dino_color'),
+    path('dino/', views.pashalka, name='pashalka'), 
     path('profile', views.profile_view, name="profile")
 
    ]
