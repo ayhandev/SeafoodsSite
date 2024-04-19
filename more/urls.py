@@ -29,6 +29,7 @@ urlpatterns = [
     path('cookies/', views.cok, name="cookie"),
     path('change_dino_color/', views.change_dino_color, name='change_dino_color'),
     path('dino/', views.pashalka, name='pashalka'), 
+    path('map/', views.karta, name='map'), 
     path('profile', views.profile_view, name="profile")
 
    ]

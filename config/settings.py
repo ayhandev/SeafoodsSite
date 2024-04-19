@@ -9,6 +9,9 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+from django.core.mail.backends.smtp import EmailBackend
+from email.message import EmailMessage
+import smtplib
 import os
 from pathlib import Path
 
@@ -31,17 +34,16 @@ ALLOWED_HOSTS = ['*']
 
 
 # система оплаты
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51P0rcvCJep2a4ZXzbwq2lkfoJxbY2JeX3frkUR6320fXj8znMUhv91CRoJpHMWZBDY4xAj3AqOIxwukqhxKcbEkc00BCiq6FuD'
-STRIPE_SECRET_KEY = 'sk_test_51P0rcvCJep2a4ZXzpA7IGmkm1khfEZSjWpTvExoNowZY7LHo2l4k0BmZhKLPLXkg0JQpW4qLXq8TtEznHPdwf3Ms00hftyTNuM'
-
+STRIPE_PUBLISHABLE_KEY = 'public key'
+STRIPE_SECRET_KEY = 'sscret key'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'jumanyyazowayhan32@gmail.com'
-EMAIL_HOST_PASSWORD = 'ckdscpruezqnreqn'
+EMAIL_HOST_USER = 'your email'
+EMAIL_HOST_PASSWORD = 'password'
 
 # Application definition
 
@@ -59,10 +61,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.instagram',
-    'crispy_forms', 
+    'crispy_forms',
     'corsheaders',
     'more',
-    
+
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -70,14 +72,16 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/accounts/google/login/callback/'
 
+
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'OAUTH_PKCE_ENABLED': True,
         'APP': {
-            'client_id': '1064541990306-j71jgl07uk19je864a8kq0nliuodcqau.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': 'client id',
+            'secret': 'secret key',
             'key': ''
         }
     }
@@ -107,9 +111,8 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_METHODS = [
     'GET',
-    'POST',  
+    'POST',
 ]
-
 
 
 WAGTAIL_SITE_NAME = "Seafoods"
@@ -152,11 +155,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', 5432),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -180,7 +186,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'tk'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Samarkand'
 
@@ -189,45 +195,33 @@ USE_I18N = True
 USE_TZ = True
 
 
-
-
-
-
-
-
-import smtplib
-from email.message import EmailMessage
-from django.core.mail.backends.smtp import EmailBackend
-
 # Настройки почтового сервера Gmail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'jumanyyazowayhan32@gmail.com'
-EMAIL_HOST_PASSWORD = 'ckdscpruezqnreqn'
+EMAIL_HOST_USER = 'your email'
+EMAIL_HOST_PASSWORD = 'password'
 
 # Функция для отправки уведомления
+
+
 def send_vip_notification(email, name):
     msg = EmailMessage()
     msg.set_content(f'{name} ({email}) купил VIP-статус.')
 
     msg['Subject'] = 'Уведомление о покупке VIP-статуса'
     msg['From'] = EMAIL_HOST_USER
-    msg['To'] = 'jumanyyazowayhan32@gmail.com' 
+    msg['To'] = 'your email'
 
     with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as smtp:
         smtp.starttls()
-        smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)  
+        smtp.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
         smtp.send_message(msg)
-
-
-
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
@@ -239,3 +233,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+try:
+    from .settings_dev import *
+except ImportError:
+    pass

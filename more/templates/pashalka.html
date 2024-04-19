@@ -5,8 +5,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
-    <title >chrome easter egg: t-rex runner</title>
+    <title>Seafood-DINO</title>
     <link rel="stylesheet" href="index.css">
+    <link rel="shortcut icon" href="{% static 'images/logoSeafoods.png' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"> 
 
 </head>
@@ -177,13 +178,14 @@ html, body {
   
 </style>
 <body id="t" class="offline">
-    <div id="messageBox" class="sendmessage">
-         <h1 style="text-align: center;font-family: 'Open Sans', sans-serif;">Press Space to start</h1>
+    <div id="messageBox" class="sendmessage" style="margin: 40px 0;">
+         <h1 style="text-align: center;font-family: 'Open Sans', sans-serif; color: white; ">If you found this easter egg, you can play dino the dinosaur, but don't tell anyone about this easter egg🤫</h1>
          <div class="niokbutton" onclick="okbuttonsend()"></div>
     </div>
     <div id="main-frame-error" class="interstitial-wrapper">
         <div id="main-content">
             <div class="icon icon-offline" alt=""></div>
+            
         </div>
         <div id="offline-resources">
             <img id="offline-resources-1x" src="{% static "assets/default_100_percent/100-offline-sprite.png" %}">
@@ -198,19 +200,6 @@ html, body {
 </body>
 
 <script>
-    document.onkeydown = function(evt) {
-    evt = evt || window.event;
-    if (evt.keyCode == 32) {
-        var box = document.getElementById("messageBox");
-        box.style.visibility="hidden";
-    }
-};
-</script>
-<script>
-    // Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-// extract from chromium source code by @liuwayong
 (function () {
     'use strict';
     /**

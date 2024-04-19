@@ -165,7 +165,8 @@
   <link href="{% static 'css/style.css' %}" rel="stylesheet" />
   <!-- responsive style -->
   <link href="{% static 'css/responsive.css' %}" rel="stylesheet" />
-
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5015225987971479"
+  crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -248,14 +249,13 @@
         <p style="text-align: center;">This site uses cookies. Do you accept? <span><a href="#" onclick="openCookieInfo();" >Learn more</a></span></p>
         <div>
           <button style="background-color: blue; color: white;" onclick="setCookie()">Accept</button>
-        <button  onclick="deleteCookie()">Decline</button>
-        {% comment %} <button style="margin-top: 5px; margin-left: 60px;" onclick="openCookieInfo(); return false;">Learn more</button> {% endcomment %}
+        <button  onclick="deleteCookie()" style="background-color: red;color: white;">Decline</button>
         </div>
     </div>
-    <div id="cookieInfoModal" style="display:none;">
+    <div id="cookieInfoModal" style="display:none; border-radius: 10px;">
       <h4>Cookie Policy</h4>
       <p>Here you can find more information about how our website uses cookies <span><a href="{% url 'more:cookie' %}">right here</a></span></p>
-      <button onclick="closeCookieInfo()">Close</button>
+      <button onclick="closeCookieInfo()" style="background-color: red;color: white; border: none; border-radius: 10px;">Close</button>
   </div>
   <script>
     function setCookie() {
@@ -466,7 +466,7 @@
                               <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                   <div class="box">
                                       <div class="img-box">
-                                          <img src="{{ review.image.url }}" alt="">
+                                          <img src="{% static 'images/cel.png' %}" alt="">
                                       </div>
                                       <div class="detail-box">
                                           <h4>{{ review.name }}</h4>
@@ -522,7 +522,7 @@
                   <input type="email" placeholder="Email" name="email" />
                 </div>
                 <div>
-                  <input type="text" class="message-box" placeholder="Please write what you want and specify the region from which you want to make the purchase." name="message" />
+                  <input type="text" class="message-box" placeholder="Message" name="message" />
                 </div>
                 <div class="d-flex ">
                   <button>
@@ -535,11 +535,10 @@
           <div class="col-md-6  px-0">
             <div class="map_container">
               <div class="map">
-                <div id="googleMap">
+    
 
-                    <a href="https://yandex.uz/maps/org/monday_academy/122406213969/?ll=64.445048%2C39.770337&z=16.81">
-                      <img src="{% static 'images/location.png' %}" alt=""></a>
-                </div>
+                    {{ place_html|safe }}
+
               </div>
             </div>
           </div>

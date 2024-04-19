@@ -25,8 +25,12 @@ from django.views.decorators.http import require_http_methods
 
 
 def home(request):
-    reviews = Review.objects.all() 
-    return render(request, 'home.html', {'reviews': reviews})
+    reviews = Review.objects.all()
+    place = Map(location=[39.770476, 64.445147], zoom_start=17)
+    Marker(location=[39.770476, 64.445147], icon=Icon(color='gray')).add_to(place)
+    
+    place_html = place._repr_html_()
+    return render(request, 'home.html', {'reviews': reviews,'place_html': place_html})
 
 
 
@@ -73,7 +77,11 @@ def chocolate(request):
 
 
 def contact(request):
-    return render(request, 'contact.html')
+    place = Map(location=[39.770476, 64.445147], zoom_start=17)
+    Marker(location=[39.770476, 64.445147], icon=Icon(color='gray')).add_to(place)
+    
+    place_html = place._repr_html_()
+    return render(request, 'contact.html', {'place_html': place_html} )
 
 
 def testimonial(request):
@@ -264,53 +272,6 @@ def success_view(request):
         'is_vip': vip_status.is_vip,
     })
 
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# import g4f
-# import json
-# from functools import lru_cache
-
-# # Функция для сериализации сообщений
-# def serialize_messages(messages):
-#     return json.dumps(messages, sort_keys=True)
-
-# # Функция кеширования ответов AI
-# @lru_cache(maxsize=100)
-# def ask_gpt_cached(messages_json: str) -> str:
-#     messages = json.loads(messages_json)
-#     try:
-#         response = g4f.ChatCompletion.create(
-#             model=g4f.models.gpt_4,
-#             messages=messages
-#         )
-#         return str(response)
-#     except Exception as e:
-#         return str(e)
-
-# # Основная функция обработки запросов для Django
-# def chat(request):
-#     context = {"user_input": "", "assistant_response": ""}
-#     if request.method == "POST":
-#         user_input = request.POST.get("user_input", "")
-#         messages = json.loads(request.session.get("messages", "[]"))  # Загрузка истории из сессии
-#         messages.append({"role": "user", "content": user_input})
-        
-#         messages_json = serialize_messages(messages)
-#         assistant_response = ask_gpt_cached(messages_json)
-
-#         # Обновляем историю в сессии
-#         if len(messages) >= 10:
-#             messages = messages[-9:]  # Оставляем последние 9 сообщений + новый ответ
-#         messages.append({"role": "assistant", "content": assistant_response})
-#         request.session["messages"] = json.dumps(messages)  # Сохраняем в сессии
-
-#         context = {
-#             "user_input": user_input,
-#             "assistant_response": assistant_response
-#         }
-#     return render(request, "chat.html", context)
-
-
 
 
 from django.http import HttpResponse
@@ -318,7 +279,7 @@ from django.http import HttpResponse
 
 def set_cookie(request):
     response = HttpResponse("Cookie set")
-    response.set_cookie('user_cookie', 'cookie_value', max_age=3600)  # Срок действия 1 час
+    response.set_cookie('user_cookie', 'cookie_value', max_age=3600) 
     return response
 
 def delete_cookie(request):
@@ -355,6 +316,7 @@ def change_dino_color(request):
         return JsonResponse({'status': 'success', 'color': color})
     return JsonResponse({'status': 'error'})
 
+
 @login_required
 def profile_view(request):
     return render(request, "profile.html")
@@ -364,3 +326,11 @@ def profile1(request):
     return render(request, "profile.html")
 
 
+from folium import Map, Marker, Icon
+
+def karta(request):
+    place = Map(location=[39.770476, 64.445147], zoom_start=17)
+    Marker(location=[39.770476, 64.445147],
+           icon=Icon(color='gray')).add_to(place)
+    place_html = place._repr_html_()
+    return render(request, 'karta.html', {'place_html': place_html})
